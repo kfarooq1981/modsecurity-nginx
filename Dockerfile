@@ -8,7 +8,8 @@ RUN apt-get update && apt-get install -y vim net-tools iputils-ping plocate apt-
     echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/ubuntu $(lsb_release -cs) nginx" | tee /etc/apt/sources.list.d/nginx.list && \
     apt-get update && \
     add-apt-repository ppa:ondrej/nginx-mainline -y && \
-    apt-get install -y nginx-full
+    apt-get install -y nginx-full && \
+    apt-get clean -y && apt-get purge -y && apt-get autoremove -y
 
 # Create a directory for ModSecurity and build it
 RUN mkdir -p /usr/local/src/nginx/ && \
@@ -35,7 +36,9 @@ RUN nginx -v && \
     cd nginx-${NGINX_VERSION} && \
     ./configure --with-compat --add-dynamic-module=/usr/local/modsecurity/ModSecurity-nginx && \
     make modules && \
-    cp objs/ngx_http_modsecurity_module.so /usr/share/nginx/modules/
+    cp objs/ngx_http_modsecurity_module.so /usr/share/nginx/modules/ && \
+    cd .. && \
+    rm -rf nginx-${NGINX_VERSION}*
 
 # Add the line at the top of /etc/nginx/nginx.conf
 RUN echo "## Nginx ModSecurity Connector\nload_module modules/ngx_http_modsecurity_module.so;" | cat - /etc/nginx/nginx.conf > temp && mv temp /etc/nginx/nginx.conf
