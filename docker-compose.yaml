@@ -1,0 +1,12 @@
+version: '3'
+services:
+  modsecurity-nginx:
+    image: kfarooq1981/modsecurity-nginx
+    network_mode: "host"
+    volumes:
+      - /etc/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - /etc/nginx/conf:/etc/nginx/sites-enabled
+      - /etc/letsencrypt:/etc/letsencrypt
+      - /var/log/nginx:/var/log/nginx
+      - /var/log/modsec_audit.log:/var/log/modsec_audit.log
+    restart: always
